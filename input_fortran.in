@@ -1,25 +1,25 @@
 & param
 Ne = 128
 z0 = 0
-zex = 15
-zexi = 15
-Tauend = 1000
-Delta = 0.6
-Ib_bar = 0.01
-g_bar = 1.5
+zex = 43.1214
+zexi = 34.91
+Tauend = 10000
+Delta = -1.05
+Ib_bar = 0.001004
+g_bar = 1.2
 U_bar = 100
 e = 0
 B = 1
-Nz = 150
-Nzi = 1000
+Nz = 431
+Nzi = 351
 Ntau = 10000
-INTT = 1
-INTZ = 1
+INTT = 500
+INTZ = 10
 a0 = 0.1
 nexl = 0
 nexr = 0
 tol = 1e-9
 m = 1
-F0_bar = 0.001
-W = 0.01
+F0_bar = 0
+W = 0
 /

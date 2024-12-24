@@ -120,7 +120,7 @@ TauAxis = (0:dtau:TauEnd)';
 % BEGIN Вычисление kpar2
     kpar2 = zeros(Nz,1);
     
-    fileID = fopen("rr.dat");
+    fileID = fopen("bb.dat");
     d = fscanf(fileID, '%f %f', [2 Inf]);
     fclose(fileID);
     d = d';
@@ -140,9 +140,9 @@ TauAxis = (0:dtau:TauEnd)';
     end
     fclose(fileID);
     
-    % kpar2 = kpar2 + Delta - 1i*e;
-    kpar2(:) = -Delta/kappa(1);
-    Delta = 0;
+    kpar2 = kpar2 + Delta - 1i*e;
+    % kpar2(:) = -Delta/kappa(1);
+    % Delta = 0;    
 % END Вычисление kpar2 
 
 InitialField = zeros(Nz,1);

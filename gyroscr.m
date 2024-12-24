@@ -89,8 +89,7 @@ C0 = s;
 % CR = -1i*kpar2(Nz);
 CL = -1i;
 CR = -1i;
-% C1 = 1/sqrt(1i*pi*s);
-C1 = 0;
+C1 = 1/sqrt(1i*pi*s);
 C2 = 1/sqrt(1i*pi*s);
 
 E = 1i*C0/3*dz/dt./kappa;
@@ -116,8 +115,8 @@ imidx = Ne+1:2*Ne;
 % p = oscill_ode_td(SF, Nzi, ZAxisi, apar(1), aperp(1), ag(1), m, s, p0v, reidx, imidx, optsp);
 p = repmat(p0,Nzi,1);
 % Jref(:) = Ib(1) * sum(p, 2)/Ne;
-Jref(:) = Current_o(p, Ib(1), Ne);
-% Jref(:) = Current_n(p_p, ai(IDX(0)), aperp(IDX(0)), s, apar(IDX(0)), Ib(IDX(0)), Ne);
+% Jref(:) = Current_o(p, Ib(1), Ne);
+Jref(:) = Current_n(p_p, ai(IDX(0)), aperp(IDX(0)), s, apar(IDX(0)), Ib(IDX(0)), Ne);
 SJ = griddedInterpolant(ZAxisi, Jref,'spline');
 J(1:ZAxis_ipart_end,1) = SJ(ZAxis_ipart);
 B(:,1) = J(:) - 1i*kpar2(:).*field(:);
@@ -228,9 +227,9 @@ for step=1:Nt-1
     SF = griddedInterpolant(ZAxis, field,'spline');
     Fref = SF(ZAxisi);    
     % RHS0 = -Fref - 1i*p.*(Delta - 1 + abs(p).^2);
-    RHS0 = RHS_o(p, Fref, Delta);
-    % phi = 0; % временно (выяснить что такое phi)
-    % RHS0  = RHS(p, Fref, aperp(IDX(step-1)), ag(IDX(step-1)), apar(IDX(step-1)), s, m, phi);
+    % RHS0 = RHS_o(p, Fref, Delta);
+    phi = 0; % временно (выяснить что такое phi)
+    RHS0  = RHS_n(p, Fref, aperp(IDX(step-1)), ag(IDX(step-1)), apar(IDX(step-1)), s, m, phi);
     % RHS0 = 1i*aperp(IDX(step-1))^(s-2)./(ag(IDX(step-1))*apar(IDX(step-1)))*Fref.*conj(p).^(s-1).*exp(-1i*(m-s)*phi) ...
     % - 1i*aperp(IDX(step-1))^2/apar(IDX(step-1))*p.*(abs(p).^2 - 1);
     p_p = [p0; p(1:Nzi-1,:) + h * RHS0(1:Nzi-1,:)]; % так наверное
@@ -241,9 +240,9 @@ for step=1:Nt-1
     % начиная с первого шага (внутри цикла)
       
     % Jref(:) = Ib(IDX(step)) * sum(p_p, 2)/Ne;    
-    Jref(:) = Current_o(p_p, Ib(IDX(step)), Ne);
+    % Jref(:) = Current_o(p_p, Ib(IDX(step)), Ne);
     % Jref(:) = 1i*ai(IDX(step))*aperp(IDX(step))^s/apar(IDX(step))*Ib(IDX(step)) * sum(p_p, 2)/Ne;
-    % Jref(:) = Current_n(p_p, ai(IDX(step)), aperp(IDX(step)), s, apar(IDX(step)), Ib(IDX(step)), Ne);
+    Jref(:) = Current_n(p_p, ai(IDX(step)), aperp(IDX(step)), s, apar(IDX(step)), Ib(IDX(step)), Ne);
 
     SJ = griddedInterpolant(ZAxisi, Jref,'spline');
     J_p(1:ZAxis_ipart_end,1) = SJ(ZAxis_ipart);
@@ -270,21 +269,21 @@ for step=1:Nt-1
         Fref_p = SF(ZAxisi);
 
         % RHS1 = -Fref_p - 1i*p_p.*(Delta - 1 + abs(p_p).^2);    
-        RHS1 = RHS_o(p_p, Fref_p, Delta);
+        % RHS1 = RHS_o(p_p, Fref_p, Delta);
         % RHS1 = 1i*aperp(IDX(step))^(s-2)./(ag(IDX(step))*apar(IDX(step)))*Fref_p.*conj(p_p).^(s-1).*exp(-1i*(m-s)*phi) ...
         %     - 1i*aperp(IDX(step))^2/apar(IDX(step))*p_p.*(abs(p_p).^2 - 1);
-        % RHS1 = RHS(p_p, Fref_p, aperp(IDX(step)), ag(IDX(step)), apar(IDX(step)), s, m, phi);
+        RHS1 = RHS_n(p_p, Fref_p, aperp(IDX(step)), ag(IDX(step)), apar(IDX(step)), s, m, phi);
 
         p_p = [p0; p(1:Nzi-1,:) + h/2 * (RHS0(1:Nzi-1,:) + RHS1(2:Nzi,:))];        
         % Jref(:) = Ib(IDX(step)) * sum(p_p, 2)/Ne;
-        Jref(:) = Current_o(p_p, Ib(IDX(step)), Ne);
-        % Jref(:) = Current(p_p, ai(IDX(step)), aperp(IDX(step)), s, apar(IDX(step)), Ib(IDX(step)), Ne);
+        % Jref(:) = Current_o(p_p, Ib(IDX(step)), Ne);
+        Jref(:) = Current_n(p_p, ai(IDX(step)), aperp(IDX(step)), s, apar(IDX(step)), Ib(IDX(step)), Ne);
         SJ = griddedInterpolant(ZAxisi, Jref,'spline');
         J_p(1:ZAxis_ipart_end,1) = SJ(ZAxis_ipart);
 
         B_p(:,1) = J_p(:) - 1i*kpar2(:).*field_p(:);
 
-        WL(IDX(step)) = w( 1,    B_p(1),  B_p(2),    WL_PART);
+        WL(IDX(step)) = w( 1, B_p(1),  B_p(2),    WL_PART);
         WR(IDX(step)) = w(-1, B_p(Nz), B_p(Nzm1), WR_PART);        
 
         DD = d(B_p(2:Nzm1), WL(IDX(step)), WR(IDX(step)), D_PART, SQRTKAPPA(IDX(step)), kappa(IDX(step)));
