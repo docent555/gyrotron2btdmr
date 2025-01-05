@@ -342,4 +342,11 @@ save(fileResultsPim, 'pim', '-ascii');
 
 save(fileT, 'TauAxis_aux', '-ascii');
 save(fileZ, 'ZAxis', '-ascii');
+
+fileDelta = sprintf('%s/%s', FolderName, 'delta.dat');
+fileID = fopen(fileDelta,'w');
+for i=1:Nz
+    fprintf(fileID,'%17.8e\t%17.8e\n', i, kpar2(i));
+end
+fclose(fileID);
 end
